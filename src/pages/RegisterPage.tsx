@@ -2,12 +2,20 @@ import React, { useState } from 'react';
 import { RegistrationForm } from '../components/RegistrationForm';
 import { SuccessMessage } from '../components/SuccessMessage';
 import { PaymentPage } from '../components/PaymentPage';
+import { ExistingAccountMessage } from '../components/ExistingAccountMessage';
 import type { RegistrationForm as RegistrationFormType } from '../types';
+
+interface ApiResponse {
+  'no-cost'?: boolean;
+  id?: string;
+  url?: string;
+}
 
 export function RegisterPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
+  const [existingAccount, setExistingAccount] = useState<{url: string} | null>(null);
   const [formData, setFormData] = useState<RegistrationFormType | null>(null);
 
   const handleSubmit = async (data: RegistrationFormType) => {
@@ -22,11 +30,15 @@ export function RegisterPage() {
         body: JSON.stringify(data)
       });
 
-      const responseData = await response.json();
+      const responseData: ApiResponse = await response.json();
 
       if (responseData['no-cost']) {
         setIsSuccess(true);
+      } else if (responseData.url) {
+        // Usuario existente
+        setExistingAccount({ url: responseData.url });
       } else {
+        // Nuevo usuario que necesita pagar
         setFormData(data);
         setShowPayment(true);
       }
@@ -38,16 +50,13 @@ export function RegisterPage() {
     }
   };
 
-  const handleBack = () => {
-    setShowPayment(false);
-    setFormData(null);
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-purple-950">
       <div className="mx-auto max-w-md px-4 py-12 sm:px-6 lg:px-8">
         <div className="rounded-lg bg-white p-8 shadow-lg">
-          {!isSuccess && !showPayment ? (
+          {existingAccount ? (
+            <ExistingAccountMessage accountUrl={existingAccount.url} />
+          ) : !isSuccess && !showPayment ? (
             <>
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold text-purple-900">Crear Cuenta</h1>
@@ -58,7 +67,7 @@ export function RegisterPage() {
               <RegistrationForm onSubmit={handleSubmit} />
             </>
           ) : showPayment && formData ? (
-            <PaymentPage formData={formData} onBack={handleBack} />
+            <PaymentPage formData={formData} />
           ) : (
             <SuccessMessage />
           )}
