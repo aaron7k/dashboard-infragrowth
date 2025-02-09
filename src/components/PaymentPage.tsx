@@ -8,16 +8,13 @@ interface Props {
     whatsapp: string;
     agencyName: string;
   };
+  onBack: () => void;
 }
 
-export function PaymentPage({ formData }: Props) {
+export function PaymentPage({ formData, onBack }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
-
-  const handleBack = () => {
-    window.history.back(); // Esto es más simple y debería funcionar
-  };
 
   const handleSubscribe = async () => {
     try {
@@ -62,9 +59,8 @@ export function PaymentPage({ formData }: Props) {
 
   return (
     <div className="text-center">
-      {/* Botón de volver arriba */}
       <button
-        onClick={handleBack}
+        onClick={onBack}
         className="mb-4 flex items-center text-sm text-purple-600 hover:text-purple-500"
       >
         <ArrowLeft className="h-4 w-4 mr-1" />

@@ -38,6 +38,11 @@ export function RegisterPage() {
     }
   };
 
+  const handleBack = () => {
+    setShowPayment(false);
+    setFormData(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-purple-950">
       <div className="mx-auto max-w-md px-4 py-12 sm:px-6 lg:px-8">
@@ -53,7 +58,7 @@ export function RegisterPage() {
               <RegistrationForm onSubmit={handleSubmit} />
             </>
           ) : showPayment && formData ? (
-            <PaymentPage formData={formData} />
+            <PaymentPage formData={formData} onBack={handleBack} />
           ) : (
             <SuccessMessage />
           )}
