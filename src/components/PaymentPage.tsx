@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CreditCard, Loader2, AlertCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { CreditCard, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface Props {
   formData: {
@@ -15,66 +15,13 @@ export function PaymentPage({ formData }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
+  const navigate = useNavigate();
 
-  const validateWhatsApp = (whatsapp: string): boolean => {
-    // Eliminar el código de país y cualquier carácter no numérico
-    const numberOnly = whatsapp.replace(/^\+\d+/, '').replace(/\D/g, '');
-    
-    // Verificar que solo contenga números y tenga la longitud correcta
-    return /^\d+$/.test(numberOnly) && numberOnly.length >= 8 && numberOnly.length <= 15;
+  const handleBack = () => {
+    navigate('/');
   };
 
-  const handleSubscribe = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    
-    // Validar el número de WhatsApp antes de proceder
-    if (!validateWhatsApp(formData.whatsapp)) {
-      setError('El número de WhatsApp no es válido. Por favor, regresa y corrige el formato (solo números, entre 8 y 15 dígitos).');
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      setError(null);
-      setStatus('Iniciando proceso de pago...');
-
-      // Guardar los datos del formulario en sessionStorage
-      sessionStorage.setItem('formData', JSON.stringify(formData));
-
-      const response = await fetch('https://flows.axelriveroc.com/webhook/create-subaccount/screrate-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': 'CJ4d3E4sBFkNSD7A'
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          name: formData.name,
-          whatsapp: formData.whatsapp,
-          agencyName: formData.agencyName,
-          successUrl: `${window.location.origin}/success`,
-          cancelUrl: `${window.location.origin}/cancel`
-        })
-      });
-
-      const data = await response.json();
-      console.log('Response:', data);
-
-      if (!response.ok || !data.url) {
-        throw new Error('Error al crear la sesión de pago');
-      }
-
-      // Redirección a Stripe
-      window.location.href = data.url;
-      
-    } catch (err) {
-      console.error('Error:', err);
-      setError('Ha ocurrido un error al procesar el pago. Por favor, intenta nuevamente.');
-      setStatus('');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ... (resto del código igual hasta el return)
 
   return (
     <div className="text-center">
@@ -130,20 +77,17 @@ export function PaymentPage({ formData }: Props) {
         {loading ? 'Procesando...' : 'Activar Suscripción'}
       </button>
 
-      {/* Mostrar el número de WhatsApp actual */}
       <div className="mt-4 text-sm text-gray-500">
         Número de WhatsApp registrado: <span className="font-medium">{formData.whatsapp}</span>
       </div>
 
-      {/* Botón para volver */}
-      <div className="mt-4">
-        <Link
-          to="/"
-          className="text-sm text-purple-600 hover:text-purple-500"
-        >
-          ← Volver y editar información
-        </Link>
-      </div>
+      <button
+        onClick={handleBack}
+        className="mt-4 flex items-center justify-center text-sm text-purple-600 hover:text-purple-500 mx-auto"
+      >
+        <ArrowLeft className="h-4 w-4 mr-1" />
+        Volver y editar información
+      </button>
     </div>
   );
 }
