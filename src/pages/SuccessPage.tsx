@@ -1,18 +1,15 @@
-import React, { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { CheckCircle, Loader2 } from 'lucide-react';
 
 export function SuccessPage() {
-  const [searchParams] = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const createAccount = async () => {
       try {
-        // Obtener los datos del sessionStorage
         const formData = JSON.parse(sessionStorage.getItem('formData') || '{}');
         
-        // Llamar a la webhook
-        await fetch('https://flows.axelriveroc.com/webhook/create-subaccount/create-account', {
+        const response = await fetch('https://flows.axelriveroc.com/webhook/create-subaccount/create-account', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -23,19 +20,20 @@ export function SuccessPage() {
             email: formData.email,
             whatsapp: formData.whatsapp,
             agencyName: formData.agencyName,
-            country: formData.country || 'AR' // País por defecto si no se especifica
+            country: formData.country || 'AR'
           })
         });
 
-        // Limpiar los datos almacenados
-        sessionStorage.removeItem('formData');
-        
-        // Redireccionar a la aplicación principal
-        window.location.href = 'https://app.infra-growth.com/';
+        if (response.status === 200) {
+          // Limpiar datos y redirigir solo si la respuesta es exitosa
+          sessionStorage.removeItem('formData');
+          window.location.href = 'https://app.infra-growth.com/';
+        } else {
+          throw new Error('Error al crear la cuenta');
+        }
       } catch (error) {
         console.error('Error creating account:', error);
-        // Aún redirigimos en caso de error para no bloquear al usuario
-        window.location.href = 'https://app.infra-growth.com/';
+        setError('Hubo un error al crear tu cuenta. Por favor, contacta a soporte.');
       }
     };
 
@@ -46,13 +44,28 @@ export function SuccessPage() {
     <div className="min-h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-purple-950">
       <div className="mx-auto max-w-md px-4 py-12 sm:px-6 lg:px-8">
         <div className="rounded-lg bg-white p-8 shadow-lg text-center">
-          <div className="mb-4 flex justify-center">
-            <CheckCircle className="h-16 w-16 text-green-500" />
-          </div>
-          <h2 className="text-2xl font-bold text-purple-900 mb-4">¡Pago Exitoso!</h2>
-          <p className="text-gray-600 mb-6">
-            Tu suscripción ha sido activada correctamente. Estás siendo redirigido...
-          </p>
+          {error ? (
+            <>
+              <div className="mb-4 flex justify-center">
+                <CheckCircle className="h-16 w-16 text-red-500" />
+              </div>
+              <h2 className="text-2xl font-bold text-purple-900 mb-4">Error en el Proceso</h2>
+              <p className="text-gray-600 mb-6">{error}</p>
+            </>
+          ) : (
+            <>
+              <div className="mb-4 flex justify-center">
+                <CheckCircle className="h-16 w-16 text-green-500" />
+              </div>
+              <h2 className="text-2xl font-bold text-purple-900 mb-4">¡Pago Exitoso!</h2>
+              <p className="text-gray-600 mb-6">
+                Tu suscripción ha sido activada correctamente. Estás siendo redirigido...
+              </p>
+              <div className="flex justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
