@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreditCard, Loader2 } from 'lucide-react';
+import { CreditCard, Loader2, AlertCircle } from 'lucide-react';
 
 interface Props {
   formData: {
@@ -15,8 +15,22 @@ export function PaymentPage({ formData }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
 
+  const validateWhatsApp = (whatsapp: string): boolean => {
+    // Eliminar el código de país y cualquier carácter no numérico
+    const numberOnly = whatsapp.replace(/^\+\d+/, '').replace(/\D/g, '');
+    
+    // Verificar que solo contenga números y tenga la longitud correcta
+    return /^\d+$/.test(numberOnly) && numberOnly.length >= 8 && numberOnly.length <= 15;
+  };
+
   const handleSubscribe = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+    
+    // Validar el número de WhatsApp antes de proceder
+    if (!validateWhatsApp(formData.whatsapp)) {
+      setError('El número de WhatsApp no es válido. Por favor, regresa y corrige el formato (solo números, entre 8 y 15 dígitos).');
+      return;
+    }
     
     try {
       setLoading(true);
@@ -94,8 +108,9 @@ export function PaymentPage({ formData }: Props) {
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-md">
-          {error}
+        <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-md flex items-center">
+          <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+          <p>{error}</p>
         </div>
       )}
 
@@ -113,6 +128,11 @@ export function PaymentPage({ formData }: Props) {
       >
         {loading ? 'Procesando...' : 'Activar Suscripción'}
       </button>
+
+      {/* Mostrar el número de WhatsApp actual */}
+      <div className="mt-4 text-sm text-gray-500">
+        Número de WhatsApp registrado: <span className="font-medium">{formData.whatsapp}</span>
+      </div>
     </div>
   );
 }
