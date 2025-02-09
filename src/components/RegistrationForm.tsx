@@ -1,67 +1,101 @@
-// ... (imports se mantienen igual)
+// ... (imports y countryOptions se mantienen igual)
 
-const countryOptions = [
-  // América del Norte
-  { code: '+1', flag: '🇺🇸', name: 'Estados Unidos' },
-  { code: '+1', flag: '🇨🇦', name: 'Canadá' },
-  { code: '+52', flag: '🇲🇽', name: 'México' },
+export function RegistrationForm({ onSubmit }: Props) {
+  // ... (estados iniciales se mantienen igual)
 
-  // América Central y Caribe
-  { code: '+506', flag: '🇨🇷', name: 'Costa Rica' },
-  { code: '+503', flag: '🇸🇻', name: 'El Salvador' },
-  { code: '+502', flag: '🇬🇹', name: 'Guatemala' },
-  { code: '+504', flag: '🇭🇳', name: 'Honduras' },
-  { code: '+505', flag: '🇳🇮', name: 'Nicaragua' },
-  { code: '+507', flag: '🇵🇦', name: 'Panamá' },
-  { code: '+1', flag: '🇵🇷', name: 'Puerto Rico' },
-  { code: '+1', flag: '🇩🇴', name: 'República Dominicana' },
-  { code: '+53', flag: '🇨🇺', name: 'Cuba' },
-  { code: '+1', flag: '🇯🇲', name: 'Jamaica' },
+  const validateWhatsApp = (number: string) => {
+    // Remover todos los espacios
+    const trimmedNumber = number.trim();
+    
+    // Verificar que solo contenga números
+    const numberOnly = /^\d+$/.test(trimmedNumber);
+    
+    if (!numberOnly) {
+      setWhatsappError('El número solo debe contener dígitos');
+      return false;
+    }
 
-  // América del Sur
-  { code: '+54', flag: '🇦🇷', name: 'Argentina' },
-  { code: '+591', flag: '🇧🇴', name: 'Bolivia' },
-  { code: '+55', flag: '🇧🇷', name: 'Brasil' },
-  { code: '+56', flag: '🇨🇱', name: 'Chile' },
-  { code: '+57', flag: '🇨🇴', name: 'Colombia' },
-  { code: '+593', flag: '🇪🇨', name: 'Ecuador' },
-  { code: '+595', flag: '🇵🇾', name: 'Paraguay' },
-  { code: '+51', flag: '🇵🇪', name: 'Perú' },
-  { code: '+598', flag: '🇺🇾', name: 'Uruguay' },
-  { code: '+58', flag: '🇻🇪', name: 'Venezuela' },
+    // Verificar longitud (entre 8 y 15 dígitos)
+    if (trimmedNumber.length < 8 || trimmedNumber.length > 15) {
+      setWhatsappError('El número debe tener entre 8 y 15 dígitos');
+      return false;
+    }
 
-  // Europa
-  { code: '+34', flag: '🇪🇸', name: 'España' },
-  { code: '+44', flag: '🇬🇧', name: 'Reino Unido' },
-  { code: '+49', flag: '🇩🇪', name: 'Alemania' },
-  { code: '+33', flag: '🇫🇷', name: 'Francia' },
-  { code: '+39', flag: '🇮🇹', name: 'Italia' },
-  { code: '+351', flag: '🇵🇹', name: 'Portugal' },
-  { code: '+31', flag: '🇳🇱', name: 'Países Bajos' },
-  { code: '+41', flag: '🇨🇭', name: 'Suiza' },
-  { code: '+32', flag: '🇧🇪', name: 'Bélgica' },
-  { code: '+46', flag: '🇸🇪', name: 'Suecia' },
-  { code: '+47', flag: '🇳🇴', name: 'Noruega' },
-  { code: '+45', flag: '🇩🇰', name: 'Dinamarca' },
-  { code: '+358', flag: '🇫🇮', name: 'Finlandia' },
-  { code: '+48', flag: '🇵🇱', name: 'Polonia' },
-  { code: '+43', flag: '🇦🇹', name: 'Austria' },
-  { code: '+30', flag: '🇬🇷', name: 'Grecia' },
-  { code: '+353', flag: '🇮🇪', name: 'Irlanda' },
+    return true;
+  };
 
-  // Asia
-  { code: '+81', flag: '🇯🇵', name: 'Japón' },
-  { code: '+82', flag: '🇰🇷', name: 'Corea del Sur' },
-  { code: '+86', flag: '🇨🇳', name: 'China' },
-  { code: '+852', flag: '🇭🇰', name: 'Hong Kong' },
-  { code: '+65', flag: '🇸🇬', name: 'Singapur' },
-  { code: '+91', flag: '🇮🇳', name: 'India' },
-  { code: '+972', flag: '🇮🇱', name: 'Israel' },
-  { code: '+971', flag: '🇦🇪', name: 'Emiratos Árabes Unidos' },
+  const handleWhatsAppChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    
+    // Solo permitir números
+    const sanitizedValue = value.replace(/\D/g, '');
+    
+    setFormData({ ...formData, whatsapp: sanitizedValue });
+    
+    if (sanitizedValue) {
+      validateWhatsApp(sanitizedValue);
+    } else {
+      setWhatsappError(null);
+    }
+  };
 
-  // Oceanía
-  { code: '+61', flag: '🇦🇺', name: 'Australia' },
-  { code: '+64', flag: '🇳🇿', name: 'Nueva Zelanda' },
-];
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validar WhatsApp antes de enviar
+    if (!validateWhatsApp(formData.whatsapp)) {
+      return;
+    }
 
-// ... (el resto del componente se mantiene igual)
+    const fullWhatsApp = `${countryCode}${formData.whatsapp}`;
+    
+    await onSubmit({
+      ...formData,
+      whatsapp: fullWhatsApp,
+    });
+  };
+
+  // ... (resto del JSX se mantiene igual, pero actualizamos el input de WhatsApp)
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* ... otros campos ... */}
+      
+      <div>
+        <label htmlFor="whatsapp" className="block text-sm font-medium text-gray-700">
+          WhatsApp
+        </label>
+        <div className="mt-1 flex relative">
+          <div className="relative">
+            {/* ... código del selector de país ... */}
+          </div>
+          <input
+            type="tel"
+            id="whatsapp"
+            required
+            inputMode="numeric"
+            pattern="[0-9]*"
+            className={`block w-full rounded-r-md border ${
+              whatsappError ? 'border-red-300' : 'border-gray-300'
+            } px-3 py-2 shadow-sm focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500`}
+            value={formData.whatsapp}
+            onChange={handleWhatsAppChange}
+            placeholder="Ejemplo: 3001234567"
+          />
+        </div>
+        {whatsappError && (
+          <p className="mt-1 text-sm text-red-600 flex items-center">
+            <AlertCircle className="h-4 w-4 mr-1" />
+            {whatsappError}
+          </p>
+        )}
+        <div className="mt-2 flex items-center text-sm text-amber-600">
+          <AlertCircle className="mr-2 h-4 w-4" />
+          <p>El número debe coincidir con el que está en los grupos de WhatsApp de la academia</p>
+        </div>
+      </div>
+
+      {/* ... resto del formulario ... */}
+    </form>
+  );
+}
