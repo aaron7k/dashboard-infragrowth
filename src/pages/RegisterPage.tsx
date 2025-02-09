@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RegistrationForm } from '../components/RegistrationForm';
 import { SuccessMessage } from '../components/SuccessMessage';
-import { PaymentPage } from '../components/PaymentPage';
+import PaymentPage from '../components/PaymentPage';
 import { ExistingAccountMessage } from '../components/ExistingAccountMessage';
 import { Loader2 } from 'lucide-react';
 import type { RegistrationForm as RegistrationFormType } from '../types';
@@ -63,10 +63,10 @@ export function RegisterPage() {
       });
 
       const responseData: ApiResponse = await response.json();
-      console.log('Search response:', responseData); // Debug log
+      console.log('Search response:', responseData);
 
       if (responseData['no-cost'] === true) {
-        console.log('No-cost account, creating...'); // Debug log
+        console.log('No-cost account, creating...');
         await createAccount(data);
       } else if (responseData.url) {
         setExistingAccount({ url: responseData.url });
