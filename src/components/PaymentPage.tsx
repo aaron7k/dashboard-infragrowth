@@ -21,7 +21,49 @@ export function PaymentPage({ formData }: Props) {
     navigate('/');
   };
 
-  // ... (resto del código igual hasta el return)
+  const handleSubscribe = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      setStatus('Iniciando proceso de pago...');
+
+      // Guardar los datos del formulario en sessionStorage
+      sessionStorage.setItem('formData', JSON.stringify(formData));
+
+      const response = await fetch('https://flows.axelriveroc.com/webhook/create-subaccount/screrate-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'CJ4d3E4sBFkNSD7A'
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          name: formData.name,
+          whatsapp: formData.whatsapp,
+          agencyName: formData.agencyName,
+          successUrl: `${window.location.origin}/success`,
+          cancelUrl: `${window.location.origin}/cancel`
+        })
+      });
+
+      const data = await response.json();
+      console.log('Response:', data);
+
+      if (!response.ok || !data.url) {
+        throw new Error('Error al crear la sesión de pago');
+      }
+
+      // Redirección a Stripe
+      window.location.href = data.url;
+      
+    } catch (err) {
+      console.error('Error:', err);
+      setError('Ha ocurrido un error al procesar el pago. Por favor, intenta nuevamente.');
+      setStatus('');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="text-center">
