@@ -12,7 +12,7 @@ interface ApiResponse {
   url?: string;
 }
 
-export function RegisterPage() {
+export default function RegisterPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);

@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { RegisterPage } from './pages/RegisterPage';
-import { SuccessPage } from './pages/SuccessPage';
-import { CancelPage } from './pages/CancelPage';
+import RegisterPage from './pages/RegisterPage';
+import SuccessPage from './pages/SuccessPage';
+import CancelPage from './pages/CancelPage';
 
 function App() {
   return (
