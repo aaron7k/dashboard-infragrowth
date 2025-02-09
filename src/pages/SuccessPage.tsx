@@ -25,7 +25,6 @@ export function SuccessPage() {
         });
 
         if (response.status === 200) {
-          // Limpiar datos y redirigir solo si la respuesta es exitosa
           sessionStorage.removeItem('formData');
           window.location.href = 'https://app.infra-growth.com/';
         } else {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { RegistrationForm } from '../components/RegistrationForm';
 import { SuccessMessage } from '../components/SuccessMessage';
 import { PaymentPage } from '../components/PaymentPage';
-import type { RegistrationForm as RegistrationFormType, ApiResponse } from '../types';
+import type { RegistrationForm as RegistrationFormType } from '../types';
 
 export function RegisterPage() {
   const [isSuccess, setIsSuccess] = useState(false);
@@ -22,7 +22,7 @@ export function RegisterPage() {
         body: JSON.stringify(data)
       });
 
-      const responseData: ApiResponse = await response.json();
+      const responseData = await response.json();
 
       if (responseData['no-cost']) {
         setIsSuccess(true);

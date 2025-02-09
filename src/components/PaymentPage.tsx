@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CreditCard, Loader2, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface Props {
   formData: {
@@ -132,6 +133,16 @@ export function PaymentPage({ formData }: Props) {
       {/* Mostrar el número de WhatsApp actual */}
       <div className="mt-4 text-sm text-gray-500">
         Número de WhatsApp registrado: <span className="font-medium">{formData.whatsapp}</span>
+      </div>
+
+      {/* Botón para volver */}
+      <div className="mt-4">
+        <Link
+          to="/"
+          className="text-sm text-purple-600 hover:text-purple-500"
+        >
+          ← Volver y editar información
+        </Link>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { XCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function CancelPage() {
   return (
