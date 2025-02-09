@@ -36,15 +36,15 @@ export function RegisterPage() {
         })
       });
 
-      if (!response.ok) {
+      if (response.status === 200) {
+        setIsSuccess(true);
+        setShowPayment(false);
+      } else {
         throw new Error('Error al crear la cuenta');
       }
-
-      setIsSuccess(true);
     } catch (error) {
       console.error('Error creating account:', error);
       setError('Error al crear la cuenta. Por favor, intenta nuevamente.');
-      setIsSuccess(false);
     }
   };
 
@@ -63,15 +63,14 @@ export function RegisterPage() {
       });
 
       const responseData: ApiResponse = await response.json();
+      console.log('Search response:', responseData); // Debug log
 
-      if (responseData['no-cost']) {
-        // Si es no-cost, crear la cuenta directamente
+      if (responseData['no-cost'] === true) {
+        console.log('No-cost account, creating...'); // Debug log
         await createAccount(data);
       } else if (responseData.url) {
-        // Usuario existente
         setExistingAccount({ url: responseData.url });
       } else {
-        // Nuevo usuario que necesita pagar
         setFormData(data);
         setShowPayment(true);
       }
@@ -110,7 +109,11 @@ export function RegisterPage() {
             </div>
           ) : existingAccount ? (
             <ExistingAccountMessage accountUrl={existingAccount.url} />
-          ) : !isSuccess && !showPayment ? (
+          ) : isSuccess ? (
+            <SuccessMessage />
+          ) : showPayment && formData ? (
+            <PaymentPage formData={formData} />
+          ) : (
             <>
               <div className="mb-8 text-center">
                 <h1 className="text-3xl font-bold text-purple-900">Crear Cuenta</h1>
@@ -120,10 +123,6 @@ export function RegisterPage() {
               </div>
               <RegistrationForm onSubmit={handleSubmit} />
             </>
-          ) : showPayment && formData ? (
-            <PaymentPage formData={formData} />
-          ) : (
-            <SuccessMessage />
           )}
         </div>
       </div>
