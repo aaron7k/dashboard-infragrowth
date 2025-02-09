@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { CreditCard, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
 interface Props {
   formData: {
@@ -15,10 +14,9 @@ export function PaymentPage({ formData }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
-  const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate('/');
+    window.history.back(); // Esto es más simple y debería funcionar
   };
 
   const handleSubscribe = async () => {
@@ -27,7 +25,6 @@ export function PaymentPage({ formData }: Props) {
       setError(null);
       setStatus('Iniciando proceso de pago...');
 
-      // Guardar los datos del formulario en sessionStorage
       sessionStorage.setItem('formData', JSON.stringify(formData));
 
       const response = await fetch('https://flows.axelriveroc.com/webhook/create-subaccount/screrate-payment', {
@@ -47,13 +44,11 @@ export function PaymentPage({ formData }: Props) {
       });
 
       const data = await response.json();
-      console.log('Response:', data);
-
+      
       if (!response.ok || !data.url) {
         throw new Error('Error al crear la sesión de pago');
       }
 
-      // Redirección a Stripe
       window.location.href = data.url;
       
     } catch (err) {
@@ -67,6 +62,15 @@ export function PaymentPage({ formData }: Props) {
 
   return (
     <div className="text-center">
+      {/* Botón de volver arriba */}
+      <button
+        onClick={handleBack}
+        className="mb-4 flex items-center text-sm text-purple-600 hover:text-purple-500"
+      >
+        <ArrowLeft className="h-4 w-4 mr-1" />
+        Volver y editar información
+      </button>
+
       <div className="mb-8">
         <div className="flex justify-center mb-4">
           <CreditCard className="h-16 w-16 text-purple-500" />
@@ -122,14 +126,6 @@ export function PaymentPage({ formData }: Props) {
       <div className="mt-4 text-sm text-gray-500">
         Número de WhatsApp registrado: <span className="font-medium">{formData.whatsapp}</span>
       </div>
-
-      <button
-        onClick={handleBack}
-        className="mt-4 flex items-center justify-center text-sm text-purple-600 hover:text-purple-500 mx-auto"
-      >
-        <ArrowLeft className="h-4 w-4 mr-1" />
-        Volver y editar información
-      </button>
     </div>
   );
 }
