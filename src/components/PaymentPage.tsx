@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { CreditCard, Loader2, AlertCircle, ArrowLeft, Calendar, X } from 'lucide-react';
 
 interface Props {
@@ -15,6 +15,17 @@ export default function PaymentPage({ formData }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
   const [showCalendarModal, setShowCalendarModal] = useState(false);
+
+  // Create a memoized calendar URL with dynamic parameters
+  const calendarUrl = useMemo(() => {
+    const baseUrl = 'https://site.infragrowthai.com/widget/booking/jAO7l4dBqBqs8wxk2Jtd';
+    const params = new URLSearchParams({
+      email: formData.email,
+      phone: formData.whatsapp,
+      name: formData.name
+    });
+    return `${baseUrl}?${params.toString()}`;
+  }, [formData]);
 
   const handleBack = () => {
     window.location.reload();
@@ -154,7 +165,7 @@ export default function PaymentPage({ formData }: Props) {
             </button>
             <div className="p-6 h-full">
               <iframe 
-                src="https://site.infragrowthai.com/widget/booking/jAO7l4dBqBqs8wxk2Jtd" 
+                src={calendarUrl}
                 className="w-full h-[70vh] border-none"
                 scrolling="yes"
               ></iframe>
