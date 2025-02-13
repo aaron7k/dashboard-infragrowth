@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CreditCard, Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
+import { CreditCard, Loader2, AlertCircle, ArrowLeft, Calendar, X } from 'lucide-react';
 
 interface Props {
   formData: {
@@ -14,6 +14,7 @@ export default function PaymentPage({ formData }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string>('');
+  const [showCalendarModal, setShowCalendarModal] = useState(false);
 
   const handleBack = () => {
     window.location.reload();
@@ -81,8 +82,8 @@ export default function PaymentPage({ formData }: Props) {
       </div>
 
       <div className="bg-gray-50 rounded-lg p-6 mb-8">
-        <div className="text-4xl font-bold text-purple-900 mb-2">$150 USD</div>
-        <div className="text-gray-600">por mes</div>
+        <div className="text-4xl font-bold text-purple-900 mb-2">$1,500 USD</div>
+        <div className="text-gray-600">trimestrales</div>
       </div>
 
       <div className="space-y-4 mb-8">
@@ -118,13 +119,49 @@ export default function PaymentPage({ formData }: Props) {
         </div>
       )}
 
-      <button
-        onClick={handleSubscribe}
-        disabled={loading}
-        className="w-full rounded-md bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? 'Procesando...' : 'Activar Suscripción'}
-      </button>
+      <div className="space-y-4">
+        <button
+          onClick={handleSubscribe}
+          disabled={loading}
+          className="w-full rounded-md bg-purple-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? 'Procesando...' : 'Activar Suscripción'}
+        </button>
+
+        <button
+          onClick={() => setShowCalendarModal(true)}
+          className="w-full rounded-md bg-purple-100 px-4 py-3 text-sm font-semibold text-purple-700 shadow-sm hover:bg-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 flex items-center justify-center"
+        >
+          <Calendar className="h-4 w-4 mr-2" />
+          ¿Tienes dudas? Agenda una reunión
+        </button>
+      </div>
+
+      {showCalendarModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+          onClick={() => setShowCalendarModal(false)}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] overflow-hidden relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowCalendarModal(false)}
+              className="absolute top-4 right-4 z-60 text-gray-600 hover:text-gray-900"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            <div className="p-6 h-full">
+              <iframe 
+                src="https://site.infragrowthai.com/widget/booking/jAO7l4dBqBqs8wxk2Jtd" 
+                className="w-full h-[70vh] border-none"
+                scrolling="yes"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 text-sm text-gray-500">
         Número de WhatsApp registrado: <span className="font-medium">{formData.whatsapp}</span>
