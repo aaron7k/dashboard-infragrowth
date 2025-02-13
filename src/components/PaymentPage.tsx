@@ -10,7 +10,6 @@ interface Props {
   };
 }
 
-// Cambiar a export default
 export default function PaymentPage({ formData }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -82,22 +81,26 @@ export default function PaymentPage({ formData }: Props) {
       </div>
 
       <div className="bg-gray-50 rounded-lg p-6 mb-8">
-        <div className="text-4xl font-bold text-purple-900 mb-2">$50 USD</div>
+        <div className="text-4xl font-bold text-purple-900 mb-2">$150 USD</div>
         <div className="text-gray-600">por mes</div>
       </div>
 
       <div className="space-y-4 mb-8">
         <div className="flex items-center justify-center space-x-2">
           <span className="text-green-500">✓</span>
-          <span>Acceso completo a todas las funcionalidades</span>
+          <span>Acceso completo a toda la estructura InfragrowthAI</span>
         </div>
         <div className="flex items-center justify-center space-x-2">
           <span className="text-green-500">✓</span>
-          <span>Soporte prioritario</span>
+          <span>Clases en vivo</span>
         </div>
         <div className="flex items-center justify-center space-x-2">
           <span className="text-green-500">✓</span>
-          <span>Actualizaciones premium</span>
+          <span>Soporte relámpago</span>
+        </div>
+        <div className="flex items-center justify-center space-x-2">
+          <span className="text-green-500">✓</span>
+          <span>Biblioteca de agentes</span>
         </div>
       </div>
 
